@@ -1,56 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import Card from "./components/Card";
+import "./styles/App.scss";
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
+import { useEffect } from "react";
+import { checkPare } from "./redux/cardSlice";
+import Footer from "./components/Footer";
 
 function App() {
+  const cardList = useAppSelector((state) => state.cards.cardList);
+  const flippedCards = useAppSelector((state) => state.cards.flippedCards);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (flippedCards && flippedCards.length === 2) {
+      setTimeout(() => {
+        dispatch(checkPare());
+      }, 300);
+    }
+  }, [flippedCards]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
+      <header>
+        <h3>Игра "Память"</h3>
+        <div>
+          Последовательно выберите две карты с одинаковым содержанием, чтобы они
+          исчезли
+        </div>
       </header>
+      <div className="container">
+        {cardList.length > 0 &&
+          cardList.map((card, indx) => {
+            return card.remooved ? (
+              <div key={indx}></div>
+            ) : (
+              <Card
+                card={card}
+                key={indx}
+                indx={indx}
+                backFace={card.backFace}
+              />
+            );
+          })}
+      </div>
+      <Footer />
     </div>
   );
 }
